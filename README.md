@@ -103,6 +103,8 @@ The search functionality leverages **relevance feedback** to iteratively refine 
 
 #### Rocchio's Algorithm
 
+![Rocchio's Algorithm](https://github.com/OmarNouih/RelevImageSearch/blob/main/images/rocchio_formula.png?raw=true)
+
 - **Objective**: Modify the initial query vector to better represent the user's intent by incorporating feedback on relevant and irrelevant documents.
 - **Formula**:
 
@@ -392,6 +394,8 @@ RelevImageSearch/
 │   ├── css/
 │   ├── js/
 │   └── images/
+├── images/
+│   └── rocchio_formula.png
 └── README.md
 ```
 
@@ -404,5 +408,7 @@ RelevImageSearch/
 - **flask_session/**: Stores session data.
 - **templates/**: HTML templates for rendering pages.
 - **static/**: Static files like CSS, JavaScript, and images.
+- **images/**: Contains images used in the README, such as the Rocchio's Algorithm formula.
 - **README.md**: Project documentation.
 
+---
