@@ -1,0 +1,447 @@
+/* static/css/styles.css */
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #4d4d60; /* Balanced dark background */
+    color: #e0e0e0; /* Light text for contrast */
+    font-family: 'Roboto', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Container Padding */
+.container {
+    padding: 20px;
+}
+
+/* Header Styles */
+header {
+    background-color: #3a3a4f; /* Darker header for distinction */
+    padding: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+nav a.btn {
+    margin: 0 10px;
+    color: #e0e0e0;
+    background-color: #4b4b6a;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    padding: 10px 20px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+nav a.btn:hover {
+    background-color: #5c5c7a;
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+/* Footer Styles */
+footer {
+    background-color: #3a3a4f;
+    padding: 20px 0;
+    color: #b0b0b0;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Image Cards */
+.card {
+    background-color: #3a3a4f;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+
+
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card-img-top:hover {
+    transform: scale(1.05);
+}
+
+/* Delete and View Features Buttons */
+.card-body {
+    padding: 15px;
+    text-align: center;
+}
+
+.card-title{
+    text-transform: capitalize;
+    color: #e0e0e0;
+}
+.category-btn {
+    width: 120px;
+    margin: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-delete {
+    background-color: #d9534f; /* Bootstrap danger color */
+    color: #ffffff;
+    border: none;
+}
+
+.btn-delete:hover {
+    background-color: #c9302c;
+    transform: scale(1.05);
+}
+
+.btn-view {
+    background-color: #0275d8; /* Bootstrap primary color */
+    color: #ffffff;
+    border: none;
+}
+
+.btn-view:hover {
+    background-color: #025aa5;
+    transform: scale(1.05);
+}
+
+/* Selected Image Card */
+.image-card.selected {
+    border: 4px solid #66bb6a;
+    box-shadow: 0 0 15px rgba(102, 187, 106, 0.7);
+}
+
+/* Form Styles */
+form {
+    background-color: #3a3a4f;
+    border-radius: 10px;
+}
+
+form label {
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+form input[type="file"],
+form select {
+    background-color: #4b4b6a;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+form input[type="file"]::file-selector-button {
+    background-color: #5c5c7a;
+    border: none;
+    padding: 8px 12px;
+    color: #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+form input[type="file"]::file-selector-button:hover {
+    background-color: #6d6d8a;
+}
+
+form .btn-primary,
+form .btn-success,
+form .btn-secondary,
+form .btn-danger,
+form .btn-warning {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+form .btn-primary:hover,
+form .btn-success:hover,
+form .btn-secondary:hover,
+form .btn-danger:hover,
+form .btn-warning:hover {
+    transform: scale(1.05);
+}
+
+/* Canvas Styling */
+#canvas {
+    border: 2px solid #555;
+    border-radius: 10px;
+    background-color: #4b4b6a;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Dominant Colors Styling */
+.dominant-color {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    border: 2px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dominant-color:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Gallery Styling */
+.gallery .card {
+    background-color: #3a3a4f;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.gallery .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.gallery .download-btn,
+.gallery .show-features-btn {
+    opacity: 0;
+}
+
+.gallery .card:hover .download-btn,
+.gallery .card:hover .show-features-btn {
+    opacity: 0.9;
+}
+
+/* Special Titles */
+.special-title {
+    font-size: 2rem; /* Increased font size for prominence */
+    color: #e0e0e0;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* General Titles (h1, h2, h3, etc.) */
+h1, h2, h3, h4, h5, h6 {
+    color: #e0e0e0;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+/* Button Enhancements */
+.btn-primary {
+    background-color: #0275d8;
+    border-color: #0275d8;
+}
+
+.btn-primary:hover {
+    background-color: #025aa5;
+    border-color: #025aa5;
+}
+
+.btn-success {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.btn-success:hover {
+    background-color: #4cae4c;
+    border-color: #398439;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn-danger {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.btn-danger:hover {
+    background-color: #c9302c;
+    border-color: #ac2925;
+}
+
+.btn-warning {
+    background-color: #f0ad4e;
+    border-color: #eea236;
+}
+
+.btn-warning:hover {
+    background-color: #ec971f;
+    border-color: #d58512;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+    .card-img-top {
+        height: 150px;
+    }
+
+    .dominant-color {
+        width: 30px;
+        height: 30px;
+    }
+
+    .special-title {
+        font-size: 1.75rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    .btn-delete, .btn-view {
+        width: 100px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+    .card-img-top {
+        height: 200px;
+    }
+
+    .dominant-color {
+        width: 35px;
+        height: 35px;
+    }
+
+    .special-title {
+        font-size: 1.85rem;
+    }
+
+    h1 {
+        font-size: 2.25rem;
+    }
+
+    h2 {
+        font-size: 1.85rem;
+    }
+
+    h3 {
+        font-size: 1.6rem;
+    }
+
+    .btn-delete, .btn-view {
+        width: 110px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .card-img-top {
+        height: 250px;
+    }
+
+    .dominant-color {
+        width: 40px;
+        height: 40px;
+    }
+
+    .special-title {
+        font-size: 2rem;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    h3 {
+        font-size: 1.75rem;
+    }
+
+    .btn-delete, .btn-view {
+        width: 120px;
+        font-size: 0.9rem;
+    }
+}
+
+.row {
+    justify-content: center;
+}
+
+.my-5{
+    margin-top: 0% !important;
+}

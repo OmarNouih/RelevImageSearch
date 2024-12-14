@@ -1,0 +1,59 @@
+<!-- templates/features.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Features - Image Search Application{% endblock %}
+
+{% block content %}
+    <div class="py-5">
+        <h2 class="text-center mb-4">Image Features</h2>
+        
+        <!-- Image Display -->
+        <div class="mb-5">
+            <h3 class="special-title">Image</h3>
+            <div class="d-flex justify-content-center">
+                <img src="{{ url_for('uploaded_file', filename=image_path) }}" alt="Image" class="img-fluid rounded shadow-sm">
+            </div>
+        </div>
+        
+        <!-- Dominant Colors Display -->
+        <div class="mb-5">
+            <h3 class="special-title">Dominant Colors</h3>
+            <div class="d-flex justify-content-center flex-wrap">
+                {% for color in dominant_colors %}
+                    <div class="dominant-color" style="background-color: {{ color }};" title="{{ color }}">
+                        <span class="sr-only">{{ color }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Feature Visualizations -->
+        <div class="mb-5">
+            <h3 class="special-title">Feature Visualizations</h3>
+            <div class="row">
+                {% for feature_name, plot in plots.items() %}
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ feature_name }}</h5>
+                                <img src="data:image/png;base64,{{ plot }}" alt="{{ feature_name }}" class="img-fluid feature-img rounded mt-3 shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Back to Home Button -->
+        <div class="d-flex justify-content-center">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-home me-1"></i> Back to Home
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts_extra %}
+    <!-- You can add additional scripts here if needed -->
+{% endblock %}

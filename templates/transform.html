@@ -1,0 +1,233 @@
+<!-- templates/transform.html -->
+{% extends "base.html" %}
+
+{% block title %}Transform - Image Search Application{% endblock %}
+
+{% block head_extra %}
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
+    <!-- Bootstrap CSS for Modal -->
+    <style>
+        .img-container {
+            text-align: center;
+            max-width: 80%;
+            margin: auto;
+            position: relative;
+        }
+
+        .img-container img {
+            max-width: 100%;
+        }
+
+        .controls-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .controls-container button {
+            margin: 0 10px;
+        }
+
+        .action-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .action-buttons button, .action-buttons a {
+            margin: 0 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Transform Image</h2>
+<div class="img-container mt-4">
+    <img id="image" src="{{ url_for('uploaded_file', filename=image_path) }}" alt="Image to Transform">
+</div>
+
+<h3 class="mt-4 text-center">Select Transformation</h3>
+<div class="controls-container mb-4">
+    <!-- Zoom Controls -->
+    <button type="button" id="zoom-in-button" class="btn btn-primary">Zoom In</button>
+    <button type="button" id="zoom-out-button" class="btn btn-primary">Zoom Out</button>
+
+    <!-- Rotate Controls -->
+    <button type="button" id="rotate-left-button" class="btn btn-secondary">Rotate Left 90°</button>
+    <button type="button" id="rotate-right-button" class="btn btn-secondary">Rotate Right 90°</button>
+
+    <!-- Crop -->
+    <button type="button" id="crop-button" class="btn btn-warning">Crop</button>
+</div>
+
+<div class="action-buttons">
+    <!-- Save Button -->
+    <button type="button" id="save-button" class="btn btn-success">Save Transformation</button>
+    <!-- Download Button -->
+    <button type="button" id="download-button" class="btn btn-info">Download Image</button>
+    <!-- View Image Button -->
+    <button type="button" id="view-button" class="btn btn-outline-primary">View Image</button>
+    <!-- Back to Home Button -->
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+</div>
+
+<!-- Modal for Viewing Image -->
+<div class="modal fade" id="viewImageModal" tabindex="-1" aria-labelledby="viewImageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="viewImageModalLabel">View Image</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modal-image" src="{{ url_for('uploaded_file', filename=image_path) }}" alt="Full Size Image" class="img-fluid">
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="text-center mt-3">Apply transformations and choose to save, download, or view the image.</p>
+{% endblock %}
+
+{% block scripts_extra %}
+    <!-- Include Cropper.js via CDN -->
+    <script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
+    <!-- Include Bootstrap JS for Modal -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let cropper;
+        const image = document.getElementById('image');
+        const imageId = "{{ image_id }}";
+
+        function initializeCropper() {
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(image, {
+                viewMode: 1,
+                aspectRatio: NaN,
+                autoCropArea: 1,
+                movable: true,
+                zoomable: true,
+                rotatable: true,
+                scalable: true,
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            initializeCropper();
+        });
+
+        async function saveTransformation() {
+            if (!cropper) {
+                alert("Cropper not initialized.");
+                return;
+            }
+            // Get final transformed data
+            const transformedDataURL = cropper.getCroppedCanvas().toDataURL('image/png', 0.8);
+
+            // Send via AJAX to the server
+            const response = await fetch("{{ url_for('transform_image', image_id=image_id) }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({transformation_data: transformedDataURL})
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.new_path) {
+                    // Update image src and re-initialize cropper
+                    image.src = "{{ url_for('uploaded_file', filename='') }}" + data.new_path + "?t=" + new Date().getTime(); // Prevent caching
+                    image.onload = () => {
+                        initializeCropper();
+                    }
+                    alert("Transformation saved successfully.");
+                } else if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    alert("No new image path returned.");
+                }
+            } else {
+                alert("Failed to save transformation on the server.");
+            }
+        }
+
+        // Download Functionality
+        function downloadImage() {
+            if (!cropper) {
+                alert("Cropper not initialized.");
+                return;
+            }
+            const transformedDataURL = cropper.getCroppedCanvas().toDataURL('image/png', 0.8);
+            const link = document.createElement('a');
+            link.href = transformedDataURL;
+            link.download = 'transformed_image.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // View Image Functionality
+        function viewImage() {
+            // Update the modal image source to the current image source
+            const modalImage = document.getElementById('modal-image');
+            modalImage.src = image.src.split('?')[0]; // Remove query params to get the actual image
+            // Initialize and show the modal
+            const viewModal = new bootstrap.Modal(document.getElementById('viewImageModal'));
+            viewModal.show();
+        }
+
+        // Zoom In
+        document.getElementById('zoom-in-button').addEventListener('click', function(){
+            if (cropper) {
+                cropper.zoom(0.1);
+            }
+        });
+
+        // Zoom Out
+        document.getElementById('zoom-out-button').addEventListener('click', function(){
+            if (cropper) {
+                cropper.zoom(-0.1);
+            }
+        });
+
+        // Rotate Left
+        document.getElementById('rotate-left-button').addEventListener('click', function(){
+            if (cropper) {
+                cropper.rotate(-90);
+            }
+        });
+
+        // Rotate Right
+        document.getElementById('rotate-right-button').addEventListener('click', function(){
+            if (cropper) {
+                cropper.rotate(90);
+            }
+        });
+
+        // Crop
+        document.getElementById('crop-button').addEventListener('click', function(){
+            if (cropper) {
+                // Optionally, you can define a cropping area or constraints here
+                // For simplicity, we'll just ensure the crop box is visible and active
+                cropper.setDragMode('crop');
+            }
+        });
+
+        // Save Transformation Button
+        document.getElementById('save-button').addEventListener('click', function(){
+            saveTransformation();
+        });
+
+        // Download Image Button
+        document.getElementById('download-button').addEventListener('click', function(){
+            downloadImage();
+        });
+
+        // View Image Button
+        document.getElementById('view-button').addEventListener('click', function(){
+            viewImage();
+        });
+    </script>
+{% endblock %}

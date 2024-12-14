@@ -1,0 +1,213 @@
+<!-- templates/search.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Search - Image Search Application{% endblock %}
+
+{% block head_extra %}
+    <style>
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        .download-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(40, 167, 69, 0.9);
+            border: none;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+        }
+
+        .download-btn:hover {
+            background-color: rgba(40, 167, 69, 1);
+        }
+
+        .show-features-btn {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background-color: rgba(23, 162, 184, 0.9);
+            border: none;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+        }
+
+        .show-features-btn:hover {
+            background-color: rgba(23, 162, 184, 1);
+        }
+
+        .bg-white {
+            background-color: #373744 !important;
+        }
+
+        .image-card.selected {
+            border: 4px solid #66bb6a;
+            box-shadow: 0 0 15px rgba(102, 187, 106, 0.7);
+        }
+        form {
+            padding: 50px !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Search Images</h2>
+
+        {% if not retrieved_images and not query_image %}
+            <div class="d-flex justify-content-center">
+                <form action="{{ url_for('search_image') }}" method="post" enctype="multipart/form-data" class="w-50 bg-white p-4 rounded shadow-sm">
+                    <div class="mb-3">
+                        <label for="query_image" class="form-label">Upload a Query Image:</label>
+                        <input type="file" name="query_image" accept="image/*" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="iteration_limit" class="form-label">Number of Iterations :</label>
+                        <input type="number" name="iteration_limit" class="form-control" value="5" min="1" max="50" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="final_results_count" class="form-label">Number of Images :</label>
+                        <input type="number" name="final_results_count" class="form-control" value="5" min="1" required>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary btn-lg">Search</button>
+                    </div>
+                </form>
+            </div>
+        {% elif query_image and retrieved_images %}
+            <!-- Query Image Display -->
+            <div class="mb-5">
+                <h3 class="special-title">Query Image</h3>
+                <div class="d-flex justify-content-center">
+                    <img src="{{ url_for('uploaded_file', filename=query_image) }}" alt="Query Image" class="img-fluid rounded shadow-sm">
+                </div>
+            </div>
+            
+            <!-- Retrieved Images Display -->
+            <div class="mb-5">
+                <h3 class="text-center">Retrieved Images </h3>
+                <form id="feedback-form">
+                    <div class="row justify-content-center" id="retrieved-images">
+                        {% for image in retrieved_images %}
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                                <div class="card h-100 shadow-sm image-card" data-id="{{ image.id }}">
+                                    <img src="{{ url_for('uploaded_file', filename=image.path) }}" class="card-img-top" alt="Retrieved Image">
+                                    <a href="{{ url_for('uploaded_file', filename=image.path) }}" download class="download-btn">Download</a>
+                                    <a href="/features/{{ image.id }}" class="show-features-btn">Show Features</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        <button type="submit" class="btn btn-success btn-lg">Submit Feedback</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Final Retrieval Display -->
+            <div id="final-retrieval" style="display: none;">
+                <h3 class="special-title">Final Retrieved Images</h3>
+                <div class="row justify-content-center gallery">
+                    <!-- Final images will be inserted here -->
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts_extra %}
+    <script>
+        $(document).ready(function(){
+            let selectedImages = [];
+
+            $('#retrieved-images').on('click', '.image-card', function(){
+                let imgId = $(this).attr('data-id');
+                $(this).toggleClass('selected');
+                if ($(this).hasClass('selected')) {
+                    if (imgId && !selectedImages.includes(imgId)) {
+                        selectedImages.push(imgId);
+                    }
+                } else {
+                    selectedImages = selectedImages.filter(id => id !== imgId);
+                }
+            });
+
+            $('#feedback-form').on('submit', function(event){
+                event.preventDefault();
+
+                if(selectedImages.length === 0){
+                    alert("Please select at least one relevant image.");
+                    return;
+                }
+
+                $.ajax({
+                    url: "{{ url_for('feedback') }}",
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({selected: selectedImages}),
+                    success: function(response){
+                        if(response.final_retrieval){
+                            $('#retrieved-images').hide();
+                            $('button[type="submit"]').hide();
+                            $('#final-retrieval').show();
+                            $('#final-retrieval .gallery').empty();
+                            response.final_retrieval.forEach(function(img){
+                                $('#final-retrieval .gallery').append(
+                                    '<div class="col-lg-3 col-md-4 col-sm-6 mb-4">' +
+                                        '<div class="card h-100 shadow-sm position-relative">' +
+                                            '<img src="' + "{{ url_for('uploaded_file', filename='') }}" + img.path + '" class="card-img-top" alt="Final Retrieved Image">' +
+                                            '<a href="' + "{{ url_for('uploaded_file', filename='') }}" + img.path + '" download class="download-btn">Download</a>' +
+                                            '<a href="/features/' + img.id + '" class="show-features-btn">Show Features</a>' +
+                                        '</div>' +
+                                    '</div>'
+                                );
+                            });
+                        } else if(response.retrieved_images && response.iteration){
+                            $('#retrieved-images').empty();
+                            let new_iteration = response.iteration;
+                            response.retrieved_images.forEach(function(img, index){
+                                $('#retrieved-images').append(
+                                    '<div class="col-lg-3 col-md-4 col-sm-6 mb-4">' +
+                                        '<div class="card h-100 shadow-sm image-card" data-id="' + img.id + '">' +
+                                            '<img src="' + "{{ url_for('uploaded_file', filename='') }}" + img.path + '" class="card-img-top" alt="Retrieved Image">' +
+                                            '<a href="' + "{{ url_for('uploaded_file', filename='') }}" + img.path + '" download class="download-btn">Download</a>' +
+                                            '<a href="/features/' + img.id + '" class="show-features-btn">Show Features</a>' +
+                                        '</div>' +
+                                    '</div>'
+                                );
+                            });
+                            $('h3.text-center:nth-of-type(2)').text('Retrieved Images (Iteration ' + new_iteration + ')');
+                        }
+                    },
+                    error: function(xhr, status, error){
+                        console.error("Error submitting feedback:", error);
+                        let errorMsg = "An error occurred while submitting feedback.";
+                        if(xhr.responseJSON && xhr.responseJSON.error){
+                            errorMsg = xhr.responseJSON.error;
+                        }
+                        alert(errorMsg);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
