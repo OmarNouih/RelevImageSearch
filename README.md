@@ -1,7 +1,5 @@
 # RelevImageSearch
 
-![Project Banner](https://github.com/OmarNouih/RelevImageSearch/blob/main/banner.png?raw=true)
-
 ## Table of Contents
 
 - [Overview](#overview)
